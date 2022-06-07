@@ -1,0 +1,98 @@
+- login + frontend page (dev tools+wireshark)
+- creazione repo (wireshark)
+- passiamo a gh (wireshark):
+    - clone
+    - commit e push
+
+-----------------------------
+Primo ip: 140.82.121.4
+secondo ip: 185.199.111.154
+Uso vodafone
+
+sudo traceroute -I <ip> ||| usa ICMP
+
+DAL FRONTEND
+** PRIMO **
+traceroute to 140.82.121.4 (140.82.121.4), 30 hops max, 60 byte packets
+ 1  vodafone.station (192.168.1.1)  1.497 ms * *
+ 2  net-2-36-142-1.cust.vodafonedsl.it (2.36.142.1)  11.981 ms  11.976 ms  11.971 ms
+ 3  * * *
+ 4  * * *
+ 5  185.210.48.38 (185.210.48.38)  13.370 ms  13.365 ms  13.360 ms
+ 6  185.210.48.39 (185.210.48.39)  13.353 ms  9.538 ms  10.144 ms
+ 7  ae4-100-xcr1.mlk.cw.net (195.59.1.25)  10.135 ms  9.604 ms  9.572 ms
+ 8  ae12-xcr1.mlu.cw.net (195.2.25.5)  9.564 ms  8.543 ms  8.549 ms
+ 9  ae7.cr1-mil2.ip4.gtt.net (141.136.103.253)  8.501 ms  8.494 ms  9.915 ms
+10  ae21.cr2-fra6.ip4.gtt.net (213.200.116.225)  19.425 ms  19.386 ms  19.453 ms
+11  87.119.94.70 (87.119.94.70)  19.366 ms  19.437 ms  19.419 ms
+12  * * *
+13  * * *
+14  lb-140-82-121-4-fra.github.com (140.82.121.4)  19.684 ms  19.658 ms  19.632 ms
+
+Server finale=Germany (frankfurt)
+
+
+** SECONDA ** 
+traceroute to 185.199.111.154 (185.199.111.154), 30 hops max, 60 byte packets
+ 1  vodafone.station (192.168.1.1)  11.682 ms  11.641 ms  11.634 ms
+ 2  net-2-36-142-1.cust.vodafonedsl.it (2.36.142.1)  11.629 ms  11.616 ms  11.602 ms
+ 3  * * *
+ 4  * * *
+ 5  185.210.48.38 (185.210.48.38)  12.745 ms  21.456 ms  21.443 ms
+ 6  185.210.48.39 (185.210.48.39)  21.427 ms  8.942 ms  8.835 ms
+ 7  185.210.48.131 (185.210.48.131)  19.789 ms  19.759 ms  19.732 ms
+ 8  cdn-185-199-111-154.github.com (185.199.111.154)  8.730 ms  8.675 ms  19.637 ms
+
+Questo è l'unica occasione in cui abbiamo trovato un server diverso da quelli di francoforte, usato per il login lato browser 
+ Server finale rintrancciabile (185.210.48.131) Ivrea -> poi si perdono le tracce
+ europa
+
+
+DA gh: ip praticamente uguale ma molti meno pacchetti
+traceroute to 140.82.121.5 (140.82.121.5), 30 hops max, 60 byte packets
+ 1  vodafone.station (192.168.1.1)  4.413 ms  4.381 ms  4.375 ms
+ 2  net-2-36-142-1.cust.vodafonedsl.it (2.36.142.1)  12.911 ms  12.895 ms  12.880 ms
+ 3  * * *
+ 4  * * *
+ 5  185.210.48.39 (185.210.48.39)  13.901 ms  13.887 ms  13.874 ms
+ 6  185.210.48.39 (185.210.48.39)  13.860 ms  8.749 ms  8.723 ms
+ 7  ae4-100-xcr1.mlk.cw.net (195.59.1.25)  8.714 ms  8.412 ms  8.389 ms
+ 8  ae12-xcr1.mlu.cw.net (195.2.25.5)  18.217 ms  18.212 ms  18.206 ms
+ 9  ae7.cr1-mil2.ip4.gtt.net (141.136.103.253)  18.200 ms  21.756 ms  13.303 ms
+10  ae21.cr2-fra6.ip4.gtt.net (213.200.116.225)  19.742 ms  19.736 ms  19.732 ms
+11  87.119.94.70 (87.119.94.70)  19.726 ms  20.539 ms  20.500 ms
+12  * * *
+13  * * *
+14  * lb-140-82-121-5-fra.github.com (140.82.121.5)  20.517 ms  19.636 ms
+differenze tra i due test:
+nel secondo test molti meno pacchetti (70 vs 300 di prima) perché non deve scaricare HTML
+
+
+CLONE
+- serve una connessione aperta per l'autenticazione (serve al server per l'abilitazione al download)
+- apre una connessione per la repo richiesta e la scarica e poi chiude questa connessionme
+- se si fa il clone di una fork, gh procede al download anche della repo upstream tramite una terza connessione 
+- viene chiusa la connessione principale
+[Informazioni da manuale github]
+
+(tutte queste operazioni sono state effettuate sui server load balance di frankfurt)
+
+GIT 
+Siamo passati a git perché gh non permette di fare push
+
+davide@davide-PCL:~/Documents/Lab5-int/lab_int_repo$ git add *
+davide@davide-PCL:~/Documents/Lab5-int/lab_int_repo$ git commit -m "test_commit"
+[main 8af674e] test_commit
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+davide@davide-PCL:~/Documents/Lab5-int/lab_int_repo$ git push
+Counting objects: 3, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 283 bytes | 283.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/DavideBu/lab_int_repo.git
+
+Da wireshark notiamo l'apertura di una sola connessione (porta 443=HTTPS)
+la mancanza di una connessione per "l'autenticazione" supponiamo sia dovuta
+al fatto di non utilizzare gh che da tramite
